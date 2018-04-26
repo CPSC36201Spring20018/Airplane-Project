@@ -19,6 +19,7 @@ transform to 1D array
 #define MAX_X_VALUE 9
 #define MAX_Y_VALUE 9
 struct node{
+	//x1 and y1 repesents the node itself, x2 and y2 represents the node it is connected to.
 	int x1, y1, pos;
   string name;
 	node *next;
@@ -33,6 +34,9 @@ public:
   void display();
   void insert_position(int pos, int new_x1, int new_y1, string new_name);
   void delete_position(int x, int y);
+	void disable_node(int x, int y);
+	void enable_node(int x, int y);
+	bool check_able(int x, int y);
   bool find_node(int x, int y);
   int find_pos(int x, int y);
 };
@@ -63,7 +67,6 @@ void List::display(){
 			if (temp->name != ""){
 				cout << temp->name << " " << "(" << temp->x1  << "," << temp->y1 << ")" << endl;
 			}
-
       temp=temp->next;
     }
 }
@@ -95,6 +98,49 @@ void List::delete_position(int x, int y){
   }
   delete(current);
 
+}
+void List::disable_node(int x, int y){
+	node *temp = new node;
+	temp = head;
+	while(temp!=NULL){
+		if (x == temp->x1 && y == temp->y1){
+			//cout << temp->name << " " << "(" << temp->x1  << "," << temp->y1 << ")" << endl;
+			temp->check_disable = true;
+			return;
+		}
+		temp=temp->next;
+	}
+	return;
+}
+void List::enable_node(int x, int y){
+	node *temp = new node;
+	temp = head;
+	while(temp!=NULL){
+		if (x == temp->x1 && y == temp->y1){
+			//cout << temp->name << " " << "(" << temp->x1  << "," << temp->y1 << ")" << endl;
+			temp->check_disable = false;
+			return;
+		}
+		temp=temp->next;
+	}
+	return;
+}
+bool List::check_able(int x, int y){
+	node *temp = new node;
+	temp = head;
+	while(temp!=NULL){
+		if (x == temp->x1 && y == temp->y1){
+			//cout << temp->name << " " << "(" << temp->x1  << "," << temp->y1 << ")" << endl;
+			if (temp->check_disable == false){
+				return false;
+			}
+			else{
+				return true;
+			}
+		}
+		temp=temp->next;
+	}
+	return false;
 }
 bool List::find_node(int x, int y){
     node *temp = new node;
@@ -129,33 +175,38 @@ public:
  void add_vertex();
  void add_edge();
  void delete_vertex(int x1, int y1);
- void delete_edge();
+ void delete_edge(int x1, int y1, int x2, int y2);
  void disable_vertex(int x1, int y1);
- void enable_edge();
+ void enable_edge(int x1, int y1, int x2, int y2);
  void enable_vertex(int x1, int y1);
- void disable_edge();
- void delete_path();
- void create_path();
- void save_path();
+ void disable_edge(int x1, int y1, int x2, int y2);
+ void create_path(int x1, int y1, int x2, int y2);
+ void delete_path(int x1, int y1, int x2, int y2);
+ void output_all_paths();
  void print_array();
  void print_existing_graph();
  void generate_distance(int x1, int x2, int y1, int y2);
-
  //convert 2D index to 1D index for position
  int get_1D_index(int x1,int y1);
  void print_linked_list();
 private:
   string name, input;
   bool check, check_linked_list;
-	int x1, x2, y1, y2, v, num_objects, v1, v2, distance, num_of_verticies, graph_edge[MAX_X_VALUE][MAX_Y_VALUE], graph[MAX_X_VALUE][MAX_Y_VALUE];
+	int x1, x2, y1, y2, v, num_objects, num_paths, num_deleted_paths, v1, v2,
+	distance, num_of_verticies, graph_edge[MAX_X_VALUE][MAX_Y_VALUE],
+	graph[MAX_X_VALUE][MAX_Y_VALUE];
 	string graph_name[MAX_X_VALUE][MAX_Y_VALUE];
-  vector<List> objs;
+  vector<List> objs, saved_paths, deleted_paths;
 };
 Airport::Airport(){
   num_of_verticies = 0;
   num_objects = 1;
-  check_linked_list = false;
+	num_paths = 1;
+	num_deleted_paths = 1;
   objs.resize(num_objects);
+	saved_paths.resize(num_paths);
+	deleted_paths.resize(num_deleted_paths);
+	check_linked_list = false;
 }
 void Airport::make_empty_graph(){
 
@@ -166,7 +217,7 @@ void Airport::make_empty_graph(){
 		for(int j = 0; j < MAX_Y_VALUE; j++){
       graph[i][j] = 0;
       graph_edge[i][j] = 0;
-			graph_name[i][j] = "";
+			graph_name[i][j] = " ";
     }
 	}
 }
@@ -230,11 +281,6 @@ void Airport::add_edge(){
       if (num_objects == 1){
         objs[0].create_node(x1,y1,graph_name[x1][y1]);
         objs[0].create_node(x2,y2,graph_name[x2][y2]);
-        /*
-        objs[0].find_node(x1,y1);
-        generate_distance(x1,x2,y1,y2);
-        objs[0].display();
-        */
         num_objects++;
         objs.resize(num_objects);
       }
@@ -255,7 +301,7 @@ void Airport::add_edge(){
             check_linked_list = true;
           }
         }
-        //if no new nodes already connected by
+        //if no new nodes already connected by a linked list
         if (check_linked_list == false){
           objs[num_objects-1].create_node(x1,y1,graph_name[x1][y1]);
           objs[num_objects-1].create_node(x2,y2,graph_name[x2][y2]);
@@ -273,16 +319,80 @@ void Airport::add_edge(){
 void Airport::delete_vertex(int x1, int y1){
   for(int i = 0; i < num_objects; ++i){
     if (objs[i].find_node(x1,y1) == true){
-			objs.size();
       objs[i].delete_position(x1,y1);
 			graph[x1][y1] = 0;
-			graph_name[v1][v2] = "";
+			graph_name[v1][v2] = " ";
+			return;
     }
   }
+	cout << "Vertex does not exist" << endl;
+}
+//removes two vertices from the graph
+void Airport::delete_edge(int x1, int y1, int x2, int y2){
+  for(int i = 0; i < num_objects; ++i){
+    if (objs[i].find_node(x1,y1) == true && objs[i].find_node(x2,y2) == true){
+      objs[i].delete_position(x1,y1);
+			objs[i].delete_position(x2,y2);
+			return;
+    }
+  }
+	cout << "Edge does not exist" << endl;
+}
+void Airport::disable_vertex(int x1, int y1){
+	for(int i = 0; i < num_objects; ++i){
+    if (objs[i].find_node(x1,y1) == true){
+      objs[i].disable_node(x1,y1);
+    }
+	}
+}
+void Airport::disable_edge(int x1, int y1, int x2, int y2){
+	for(int i = 0; i < num_objects; ++i){
+		if (objs[i].find_node(x1,y1) == true && objs[i].find_node(x2,y2) == true){
+			objs[i].disable_node(x1,y1);
+			objs[i].disable_node(x2,y2);
+		}
+	}
+}
+void Airport::enable_edge(int x1, int y1, int x2, int y2){
+	for(int i = 0; i < num_objects; ++i){
+		if (objs[i].find_node(x1,y1) == true && objs[i].find_node(x2,y2) == true){
+			objs[i].enable_node(x1,y1);
+			objs[i].enable_node(x2,y2);
+		}
+	}
+}
+void Airport::create_path(int x1, int y1, int x2, int y2){
+	for(int i = 0; i < num_objects; ++i){
+		if (objs[i].find_node(x1,y1) == true && objs[i].find_node(x2,y2) == true){
+			if (objs[i].check_able(x1,y1) == false && objs[i].check_able(x2,y2) == false)
+			cout << "Path saved" << endl;
+			saved_paths[num_paths-1] = objs[i];
+			++num_paths;
+			saved_paths.resize(num_paths);
+		}
+	}
+}
+void Airport::delete_path(int x1, int y1, int x2, int y2){
+	for(int i = 0; i < num_paths; ++i){
+		if (saved_paths[i].find_node(x1,y1) == true && saved_paths[i].find_node(x2,y2) == true){
+			cout << "Path deleted" << endl;
+			deleted_paths[num_deleted_paths-1] = saved_paths[i];
+			++num_deleted_paths;
+			deleted_paths.resize(num_paths);
+			saved_paths.erase(saved_paths.begin()+i);
+			--num_paths;
+			saved_paths.resize(num_paths);
+		}
+	}
+}
+void Airport::output_all_paths(){
+	for(int i = 0; i < num_deleted_paths; ++i){
+		deleted_paths[i].display();
+	}
 }
 void Airport::print_array(){
   cout << endl;
-  cout << "Here is the graph. 0 represents no node, 1 represents node" << endl;
+  cout << "Here are all the verticies. 0 represents no node, 1 represents node" << endl;
   for(int i = 0; i < MAX_X_VALUE; ++i){
 		for(int j = 0; j < MAX_Y_VALUE; j++){
       cout << graph[i][j];
@@ -328,6 +438,8 @@ int main(){
   F.make_empty_graph();
   F.add_vertex();
 	F.add_edge();
+	F.create_path(1,1,2,2);
+	F.delete_path(1,1,2,2);
   F.add_edge();
   F.print_linked_list();
   F.delete_vertex(1,1);
