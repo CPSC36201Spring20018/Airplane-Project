@@ -181,7 +181,8 @@ public:
  void enable_vertex();
  void disable_edge();
  void create_path();
- void delete_path();
+ void delete_path_4(int x1, int x2, int y1, int y2);
+ void delete_path_2(int x1, int y1);
  void output_all_deleted_paths();
  void print_array();
  void print_existing_graph();
@@ -242,20 +243,17 @@ void Airport::add_vertex(){
       int num = stoi(input);
       for (int i = 0; i < num; ++i){
         cout << "\nInput coordinates: ";
-    		cout << "\nX: ";
-    		cin >> v2;
-    		cout << "Y: ";
-    		cin >> v1;
+    		check_input_2();
 				cout << "name: ";
 				cin >> name;
         //checks that new coordinates are unique.
-        if (graph[v1][v2] == 1){
+        if (graph[x1][y1] == 1){
           cout << "Error, vertex already exists" << endl;
         }
         else{
           num_of_verticies++;
-          graph[v1][v2] = 1;
-					graph_name[v1][v2] = name;
+          graph[x1][y1] = 1;
+					graph_name[x1][y1] = name;
           print_array();
         }
       }
@@ -269,10 +267,11 @@ void Airport::add_edge(){
   }
   else{
     print_existing_graph();
-		check_input_4();
-		if (check == true){
+
+		if (check_input_4() == true){
     	//checking to insure vertex exist in graph and that they are not the same vertex
-	    if (graph[x1][y1] == 1 && graph[x2][y2] == 1 && (x1 != x2 || y1 != y2)){
+	    if (graph[x1][y1] == 1 && graph[x2][y2] == 1){
+				//cout << "test" << endl;
 	      if (num_objects == 1){
 	        objs[0].create_node(x1,y1,graph_name[x1][y1]);
 	        objs[0].create_node(x2,y2,graph_name[x2][y2]);
@@ -319,6 +318,11 @@ void Airport::delete_vertex(){
 	      objs[i].delete_position(x1,y1);
 				graph[x1][y1] = 0;
 				graph_name[v1][v2] = " ";
+				for (int i = 0; i < saved_paths.size(); ++i){
+					if (saved_paths[i].find_node(x1,y1) == true){
+						delete_path_2(x1,y1);
+					}
+				}
 				return;
 	    }
 	  }
@@ -332,6 +336,7 @@ void Airport::delete_edge(){
 	    if (objs[i].find_node(x1,y1) == true && objs[i].find_node(x2,y2) == true){
 	      objs[i].delete_position(x1,y1);
 				objs[i].delete_position(x2,y2);
+				delete_path_4(x1,x2,y1,y2);
 				return;
 	    }
 	  }
@@ -389,18 +394,29 @@ void Airport::create_path(){
 		}
 	}
 }
-void Airport::delete_path(){
-	if (check_input_4() == true){
-		for(int i = 0; i < num_paths; ++i){
-			if (saved_paths[i].find_node(x1,y1) == true && saved_paths[i].find_node(x2,y2) == true){
-				cout << "Path deleted" << endl;
-				deleted_paths[num_deleted_paths-1] = saved_paths[i];
-				++num_deleted_paths;
-				deleted_paths.resize(num_paths);
-				saved_paths.erase(saved_paths.begin()+i);
-				--num_paths;
-				saved_paths.resize(num_paths);
-			}
+void Airport::delete_path_4(int x1, int x2, int y1, int y2){
+	for(int i = 0; i < num_paths; ++i){
+		if (saved_paths[i].find_node(x1,y1) == true && saved_paths[i].find_node(x2,y2) == true){
+			cout << "Path deleted" << endl;
+			deleted_paths[num_deleted_paths-1] = saved_paths[i];
+			++num_deleted_paths;
+			deleted_paths.resize(num_paths);
+			saved_paths.erase(saved_paths.begin()+i);
+			--num_paths;
+			saved_paths.resize(num_paths);
+		}
+	}
+}
+void Airport::delete_path_2(int x1, int y1){
+	for(int i = 0; i < num_paths; ++i){
+		if (saved_paths[i].find_node(x1,y1) == true){
+			cout << "Path deleted" << endl;
+			deleted_paths[num_deleted_paths-1] = saved_paths[i];
+			++num_deleted_paths;
+			deleted_paths.resize(num_paths);
+			saved_paths.erase(saved_paths.begin()+i);
+			--num_paths;
+			saved_paths.resize(num_paths);
 		}
 	}
 }
@@ -425,7 +441,7 @@ void Airport::print_existing_graph(){
 	for (int i = 0; i < MAX_X_VALUE; ++i){
 		for (int j = 0; j < MAX_Y_VALUE; ++j){
 			if (graph[i][j] == 1){
-				cout << i<< "," << j << " " << graph_name[i][j] << endl;
+				cout << i << "," << j << " " << graph_name[i][j] << endl;
 			}
 		}
 	}
@@ -478,7 +494,7 @@ bool Airport::check_input_4(){
 		x2 = stoi(input);
 	}
 	cout << "Y2: ";
-	cin >> y2;
+	cin >> input;
 	for (int i = 0; i < input.length(); ++i){
 		if (!isdigit(input[i])){
 			//cout << "\nError";
@@ -488,6 +504,7 @@ bool Airport::check_input_4(){
 	if (check == true){
 		y2 = stoi(input);
 	}
+	//cout << x1 << " " << y1 << " " << x2 << " "<< y2 << endl;
 	return check;
 }
 bool Airport::check_input_2(){
@@ -531,6 +548,7 @@ void Airport::print_linked_list(){
 }
 void Airport::UI(){
 	make_empty_graph();
+	string input;
 	while (input != "q"){
 		cout << "Input 1 for FAA user, 2 for Airline user, q for quit" << endl;
 		cin >> input;
@@ -577,7 +595,8 @@ void Airport::UI(){
 					create_path();
 				}
 				if (input == "2"){
-					delete_path();
+					check_input_4();
+					delete_path_4(x1,x2,y1,y2);
 				}
 			}
 		}
