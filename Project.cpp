@@ -556,13 +556,13 @@ void Airport::UI(){
 	make_empty_graph();
 	string input;
 	while (input != "q"){
-		cout << "Input 1 for FAA user, 2 for Airline user, q for quit" << endl;
+		cout << "Input 1 for FAA user, 2 for Airline user, q for quit." << endl;
 		cin >> input;
 		if (input == "1"){
 			while (input != "11"){
 				cout << "Input 1 to add vertex, 2 to add edge, 3 to disable vertex, 4 to enable vertex,";
 				cout << " 5 to  delete vertex, 6 to disable edge, 7 to enable edge, 8 to delete edge,";
-				cout << " 9 to output airport map, 10 to delete path, 11 to exit FAA user" << endl;
+				cout << " 9 to output airport map, 10 to delete path, 11 to exit FAA user." << endl;
 				cin >> input;
 				if (input == "1"){
 					add_vertex();
@@ -599,7 +599,7 @@ void Airport::UI(){
 		}
 		if (input == "2"){
 			while (input != "4"){
-				cout << "Input 1 to create path, 2 to output all saved paths, 3 to output all delete paths, 4 to exit Airline user" << endl;
+				cout << "Input 1 to create path, 2 to output all saved paths, 3 to output all delete paths, 4 to exit Airline user." << endl;
 				cin >> input;
 				if (input == "1"){
 					create_path();
