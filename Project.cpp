@@ -553,10 +553,10 @@ void Airport::UI(){
 		cout << "Input 1 for FAA user, 2 for Airline user, q for quit" << endl;
 		cin >> input;
 		if (input == "1"){
-			while (input != "10"){
+			while (input != "11"){
 				cout << "Input 1 to add vertex, 2 to add edge, 3 to disable vertex, 4 to enable vertex,";
 				cout << " 5 to  delete vertex, 6 to disable edge, 7 to enable edge, 8 to delete edge,";
-				cout << " 9 to output airport map, 10 to exit FAA user" << endl;
+				cout << " 9 to output airport map, 10 to delete path, 11 to exit FAA user" << endl;
 				cin >> input;
 				if (input == "1"){
 					add_vertex();
@@ -585,20 +585,20 @@ void Airport::UI(){
 				if (input == "9"){
 					print_linked_list();
 				}
+				if (input == "10"){
+					check_input_4();
+					delete_path_4(x1,x2,y1,y2);
+				}
 			}
 		}
 		if (input == "2"){
-			while (input != "4"){
-				cout << "Input 1 to create path, 2 to delete paths, 3 to output all delete paths, 4 to exist Airline user" << endl;
+			while (input != "3"){
+				cout << "Input 1 to create path, 2 to output all delete paths, 3 to exist Airline user" << endl;
 				cin >> input;
 				if (input == "1"){
 					create_path();
 				}
 				if (input == "2"){
-					check_input_4();
-					delete_path_4(x1,x2,y1,y2);
-				}
-				if (input == "3"){
 					output_all_deleted_paths();
 				}
 			}
@@ -607,18 +607,6 @@ void Airport::UI(){
 
 }
 int main(){
-
   Airport F;
 	F.UI();
-/*
-	F.make_empty_graph();
-  F.add_vertex();
-	F.add_edge();
-	F.create_path();
-	F.delete_path();
-  F.add_edge();
-  F.print_linked_list();
-  F.delete_vertex();
-  F.print_linked_list();
-*/
 }
