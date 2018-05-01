@@ -184,6 +184,7 @@ public:
  void delete_path_4(int x1, int x2, int y1, int y2);
  void delete_path_2(int x1, int y1);
  void output_all_deleted_paths();
+ void output_all_saved_paths();
  void print_array();
  void print_existing_graph();
  void generate_distance();
@@ -426,6 +427,11 @@ void Airport::output_all_deleted_paths(){
 		deleted_paths[i].display();
 	}
 }
+void Airport::output_all_saved_paths(){
+	for(int i = 0; i < num_deleted_paths; ++i){
+		saved_paths[i].display();
+	}
+}
 void Airport::print_array(){
   cout << endl;
   cout << "Here are all the verticies. 0 represents no node, 1 represents node" << endl;
@@ -592,13 +598,16 @@ void Airport::UI(){
 			}
 		}
 		if (input == "2"){
-			while (input != "3"){
-				cout << "Input 1 to create path, 2 to output all delete paths, 3 to exist Airline user" << endl;
+			while (input != "4"){
+				cout << "Input 1 to create path, 2 to output all saved paths, 3 to output all delete paths, 4 to exit Airline user" << endl;
 				cin >> input;
 				if (input == "1"){
 					create_path();
 				}
 				if (input == "2"){
+					output_all_saved_paths();
+				}
+				if (input == "3"){
 					output_all_deleted_paths();
 				}
 			}
