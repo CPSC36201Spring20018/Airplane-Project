@@ -271,7 +271,7 @@ void Airport::add_edge(){
 
 		if (check_input_4() == true){
     	//checking to insure vertex exist in graph and that they are not the same vertex
-	    if (graph[x1][y1] == 1 && graph[x2][y2] == 1){
+	    if (graph[x1][y1] == 1 && graph[x2][y2] == 1 && graph_name[x1][y1] != " " && graph_name[x2][y2] != " "){
 				//cout << "test" << endl;
 	      if (num_objects == 1){
 	        objs[0].create_node(x1,y1,graph_name[x1][y1]);
