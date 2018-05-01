@@ -387,6 +387,7 @@ void Airport::create_path(){
 			if (objs[i].find_node(x1,y1) == true && objs[i].find_node(x2,y2) == true){
 				if (objs[i].check_able(x1,y1) == false && objs[i].check_able(x2,y2) == false)
 				cout << "Path saved" << endl;
+				generate_distance();
 				saved_paths[num_paths-1] = objs[i];
 				++num_paths;
 				saved_paths.resize(num_paths);
@@ -447,14 +448,13 @@ void Airport::print_existing_graph(){
 	}
 }
 void Airport::generate_distance(){
-	check_input_4();
   if (abs(x1 - x2) > abs(y1 - y2)){
     distance = abs(x1 - x2);
   }
   else{
     distance = abs(y1 - y2);
   }
-  cout << "distance: " << distance << endl;
+  cout << "Distance of path: " << distance << endl;
 }
 bool Airport::check_input_4(){
 	check = true;
@@ -588,8 +588,8 @@ void Airport::UI(){
 			}
 		}
 		if (input == "2"){
-			while (input != "3"){
-				cout << "Input 1 to create path, 2 to output all deleted paths, 3 to exist Airline user" << endl;
+			while (input != "4"){
+				cout << "Input 1 to create path, 2 to delete paths, 3 to output all delete paths, 4 to exist Airline user" << endl;
 				cin >> input;
 				if (input == "1"){
 					create_path();
@@ -597,6 +597,9 @@ void Airport::UI(){
 				if (input == "2"){
 					check_input_4();
 					delete_path_4(x1,x2,y1,y2);
+				}
+				if (input == "3"){
+					output_all_deleted_paths();
 				}
 			}
 		}
