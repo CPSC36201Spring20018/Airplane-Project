@@ -568,7 +568,7 @@ void Airport::UI(){
 					disable_vertex();
 				}
 				if (input == "4"){
-					enable_edge();
+					enable_vertex();
 				}
 				if (input == "5"){
 					delete_vertex();
