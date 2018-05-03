@@ -231,7 +231,7 @@ void Airport::add_vertex(){
 	// Take the input of the adjacent vertex pairs of the given graph.
 	input.clear();
   while (input != "q"){
-		cout<<"\nInput number of verticies: ";
+		cout<<"\nInput number of verticies, press q to quit: ";
 		cin >> input;
     check = true;
     for (int i = 0; i < input.length(); ++i){
@@ -515,7 +515,7 @@ bool Airport::check_input_4(){
 }
 bool Airport::check_input_2(){
 	check = true;
-	cout << "Input first vertex: " << endl;
+	cout << "Input vertex: " << endl;
 	cout << "X1: ";
 	cin >> input;
 	for (int i = 0; i < input.length(); ++i){
